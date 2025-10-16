@@ -1,0 +1,72 @@
+Esempi di JSON inviati dallo Shield:
+
+All'avvio, lo Shield invia i seguenti JSON i quali indicano rispettivamente che lo Shield Manager e il packet capture sono in esecuzione
+{ "type": "start",   "timestamp": "2025-07-15T11:39:49.123Z" }
+{ "type": "pktcap_started",  "timestamp": "2025-07-15T11:39:49.123Z" }
+
+Viene inoltre inviato un JSON con la richiesta di configurazione
+{ "type": "configuration_request", "timestamp": "2025-07-15T11:39:49.123Z" }
+
+Periodicamente lo Shield invia il seguente messaggio il quale indica che sia lo Shield Manager che il packet capture sono in esecuzione
+{ "type": "alive",   "timestamp": "2025-07-15T11:39:49.123Z" }
+
+Se lo Shield Manager e il packet capture vanno in stop, viene inviato questo messaggio
+{ "type": "stop",    "timestamp": "2025-07-15T11:39:49.123Z" }
+
+Se solo il packet capture va in stop, viene inviato questo messaggio
+{ "type": "pktcap_stopped",  "timestamp": "2025-07-15T11:39:49.123" }
+
+Se solo il packet capture torna in esecuzione, viene inviato questo messaggio
+{ "type": "pktcap_running",  "timestamp": "2025-07-15T11:39:49.123" }
+
+Ogni n secondi lo Shield invia il numero di pacchetti visti in finestre temporali di un secondo:
+{ "type": "number_of_packets", "timestamp": "2025-07-15T11:39:49.123Z", "data": "181" }
+
+Se viene riconosciuta una anomalia fisica, viene inviato il seguente messaggio. Il numero del modello indica il serbatoio in fault
+{ "type": "anomaly", "timestamp": "2025-07-15T11:39:49.123Z", "model": "model_1", "description":"Anomaly detected: threshold 0 exceeded by 0.23"}
+
+
+Di seguito si riportano alcuni test sul riconoscimento di attacchi cyber.
+
+Per attacchi di scansione (Null scan).
+Caso 1: IP non è tra gli indirizzi autorizzati nella rete
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp1s0", "data":{"sig_generator":"3", "sig_id":"1000003","proto":"tcp", "dest_port":"502", "mac_src":"00:80:f4:03:be:ef", "ip_src":"84.3.251.98"}}
+
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp2s0", "data":{"sig_generator":"3", "sig_id":"1000003","proto":"tcp", "dest_port":"502", "mac_src":"00:80:f4:03:be:ef", "ip_src":"84.3.251.98"}}
+
+Caso 2: solo l'IP è tra gli indirizzi autorizzati nella rete
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp1s0", "data":{"sig_generator":"3", "sig_id":"1000003","proto":"tcp", "dest_port":"502", "mac_src":"00:80:f4:03:de:ad", "ip_src":"84.3.251.18"}}
+
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp2s0", "data":{"sig_generator":"3", "sig_id":"1000003","proto":"tcp", "dest_port":"502", "mac_src":"00:80:f4:03:de:ad", "ip_src":"84.3.251.18"}}
+
+Caso 3: IP e MAC sono tra gli indirizzi autorizzati nella rete
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp1s0", "data":{"sig_generator":"3", "sig_id":"1000003","proto":"tcp", "dest_port":"502", "mac_src":"00:80:f4:03:fb:12", "ip_src":"84.3.251.18"}}
+
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp2s0", "data":{"sig_generator":"3", "sig_id":"1000003","proto":"tcp", "dest_port":"502", "mac_src":"00:80:f4:03:fb:12", "ip_src":"84.3.251.18"}}
+
+
+Per attacchi di DoS/DDoS
+TCP flood
+
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp1s0", "data":{"sig_generator":"2", "sig_id":"1000002","proto":"tcp", "dest_port":"", "mac_src":"00:80:f4:03:fb:12", "ip_src":"84.3.251.18"}}
+
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp2s0", "data":{"sig_generator":"2", "sig_id":"1000002","proto":"tcp", "dest_port":"", "mac_src":"00:80:f4:03:fb:12", "ip_src":"84.3.251.18"}}
+
+ICMP flood
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp1s0", "data":{"sig_generator":"2", "sig_id":"1000001","proto":"icmp", "dest_port":"", "mac_src":"00:40:f4:03:fb:12", "ip_src":"84.3.251.97"}}
+
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp2s0", "data":{"sig_generator":"2", "sig_id":"1000001","proto":"icmp", "dest_port":"", "mac_src":"00:40:f4:03:fb:12", "ip_src":"84.3.251.97"}}
+
+Per attacchi ARP poisoning (cache overwrite)
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp1s0", "data":{"sig_generator":"112", "sig_id":"4","proto":"", "dest_port":"", "mac_src":"00:40:f4:03:fb:12", "ip_src":""}}
+
+{ "type": "attack",  "timestamp": "2025-07-15T11:39:49.123Z","interface":"enp2s0", "data":{"sig_generator":"112", "sig_id":"4","proto":"", "dest_port":"", "mac_src":"00:40:f4:03:fb:12", "ip_src":""}}
+
+Inoltre, per ogni attacco, è importante testare la logica di funzionamento dell'orchestrator in caso di
+1) attacco riconosciuto su entrambe le interfacce
+2) a valle di esecuzione della risposta, attacco riconosciuto solo su una interfaccia
+3) a valle di esecuzione della risposta, attacco non più rilevato
+4) a valle di esecuzione della risposta, attacco ancora riconosciuto su entrambe le interfacce
+
+A valle dell'esecuzione di una risposta, viene inviato il seguente JSON
+{ "type": "executed_response", "exit_code":0, "id":"1","timestamp": "2025-07-15T11:39:49.123Z", "output":"eyJoYW5kbGUiOjQ1fQo="}
