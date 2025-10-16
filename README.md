@@ -7,7 +7,7 @@ L'applicazione non è più solo una simulazione, ma un **client Kafka funzionale
 2.  **Implementare** la logica di un orchestratore per rispondere automaticamente alle minacce.
 3.  **Inviare** comandi di contromisura e configurazione agli shield.
 4.  **Visualizzare** l'intero processo in un'interfaccia grafica intuitiva.
-
+   
 ---
 
 ## Indice dei Contenuti
