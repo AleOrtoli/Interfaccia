@@ -48,6 +48,7 @@ La logica di orchestrazione è automatica: in risposta a un messaggio di attacco
 
 ## 🔧 Installazione e Avvio
 Da considerare che i seguenti passaggi sono stati effettuati su un sistema Windows.
+
 Per eseguire il progetto, sono necessari **Python 3**, **Java 17+** e **Apache Kafka**.
 
 ### Passo 1: Configurazione di Apache Kafka
