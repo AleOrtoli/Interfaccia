@@ -1,104 +1,104 @@
-# Network Security Monitor for ICS Networks (Kafka Client)
+# Network Security Monitor per Reti ICS (Client Kafka)
 
-This project is a desktop application created in Python that acts as a security control panel (dashboard) for an industrial (OT) network. The interface connects to an **Apache Kafka** broker to display and manage the real-time status of two "Shield" devices and a central "Orchestrator."
+Questo progetto è un'applicazione desktop creata in Python che funge da pannello di controllo per la sicurezza (dashboard) di una rete industriale (OT). L'interfaccia si collega a un broker **Apache Kafka** per visualizzare e gestire in tempo reale lo stato di due dispositivi "Shield" e di un "Orchestrator" centrale.
 
-The application is no longer just a simulation but a **functional Kafka client** designed to:
-1.  **Receive** status and attack messages sent by the shields.
-2.  **Implement** an orchestrator's logic to automatically respond to threats.
-3.  **Send** countermeasure and configuration commands to the shields.
-4.  **Visualize** the entire process in an intuitive graphical interface.
+L'applicazione non è più solo una simulazione, ma un **client Kafka funzionale** progettato per:
+1.  **Ricevere** messaggi di stato e di attacco inviati dagli shield.
+2.  **Implementare** la logica di un orchestratore per rispondere automaticamente alle minacce.
+3.  **Inviare** comandi di contromisura e configurazione agli shield.
+4.  **Visualizzare** l'intero processo in un'interfaccia grafica intuitiva.
 
 ---
 
-## Table of Contents
-* [Description](#-descrizione)
-* [Main Features](#-funzionalità-principali)
-* [Installation and Startup](#-installazione-e-avvio)
-    * [Step 1: Apache Kafka Setup](#passo-1-configurazione-di-apache-kafka)
-    * [Step 2: Python Project Setup](#passo-2-configurazione-del-progetto-python)
-    * [Step 3: Start the Application](#passo-3-avvio-dellapplicazione)
-* [Verifying Operation](#-verifica-del-funzionamento)
-* [Dependencies](#-dipendenze)
+## Indice dei Contenuti
+* [Descrizione](#-descrizione)
+* [Funzionalità Principali](#-funzionalità-principali)
+* [Installazione e Avvio](#-installazione-e-avvio)
+    * [Passo 1: Configurazione di Apache Kafka](#passo-1-configurazione-di-apache-kafka)
+    * [Passo 2: Configurazione del Progetto Python](#passo-2-configurazione-del-progetto-python)
+    * [Passo 3: Avvio dell'Applicazione](#passo-3-avvio-dellapplicazione)
+* [Verifica del Funzionamento](#-verifica-del-funzionamento)
+* [Dipendenze](#-dipendenze)
 
 ---
 
 ## 📜 Descrizione
 
-The dashboard dynamically monitors the status of each Shield, which can be:
-* 🟢 **OPERATIONAL**: The shield is functioning normally.
-* 🔴 **ATTACK**: The shield has detected a threat. The orchestrator will send a countermeasure.
-* 🟡 **RECOVERY**: The countermeasure has been applied. The shield is in a recovery phase.
-* ⚫ **OFF**: The shield is off or unreachable.
+La dashboard monitora dinamicamente lo stato di ogni Shield, che può essere:
+* 🟢 **OPERATIONAL**: Lo shield funziona normalmente.
+* 🔴 **ATTACK**: Lo shield ha rilevato una minaccia. L'orchestratore invierà una contromisura.
+* 🟡 **RECOVERY**: La contromisura è stata applicata. Lo shield è in fase di recupero.
+* ⚫ **OFF**: Lo shield è spento o non connesso.
 
-The orchestration logic is automatic: in response to an attack message received via Kafka, the orchestrator sends specific commands (e.g., `nftables` firewall rules) to neutralize the threat and, subsequently, to restore normal operations.
+La logica di orchestrazione è automatica: in risposta a un messaggio di attacco ricevuto via Kafka, l'orchestratore invia comandi specifici (es. regole firewall `nftables`) per neutralizzare la minaccia e, successivamente, per ripristinare la normalità.
 
 ---
 
 ## ✨ Funzionalità Principali
-* **Apache Kafka Integration**: The application is a true Kafka client that produces and consumes messages, making it integrable into a real architecture.
-* **Automatic Orchestration Logic**: It autonomously responds to attack events according to defined rules, sending mitigation and restoration commands.
-* **Event Simulation (Injector)**: A control panel allows simulating messages sent by the shields in three modes:
-    1.  **Manual**: By entering a single JSON in a text box.
-    2.  **From File**: By sending all test logs from the `json.txt` file in sequence.
-    3.  **Automatic**: By sending a random log to a random shield at 10-second intervals.
-* **Real-Time Visualization**: A graphical map of the network with statuses and IP addresses that update based on received messages.
-* **Modern UI**: The interface uses a professional dark theme thanks to the `sv-ttk` library.
+* **Integrazione con Apache Kafka**: L'applicazione è un vero client Kafka che produce e consuma messaggi, rendendola integrabile in un'architettura reale.
+* **Logica di Orchestrazione Automatica**: Risponde autonomamente agli eventi di attacco secondo le regole definite, inviando comandi di mitigazione e ripristino.
+* **Simulazione di Eventi (Injector)**: Un pannello di controllo permette di simulare i messaggi inviati dagli shield in tre modalità:
+    1.  **Manuale**: Inserendo un singolo JSON in una casella di testo.
+    2.  **Da File**: Inviando in sequenza tutti i log di test presenti nel file `json.txt`.
+    3.  **Automatica**: Inviando un log casuale a uno shield casuale a intervalli di 10 secondi.
+* **Visualizzazione in Tempo Reale**: Una mappa grafica della rete con stati e indirizzi IP che si aggiornano in base ai messaggi ricevuti.
+* **UI Moderna**: L'interfaccia utilizza un tema scuro professionale grazie alla libreria `sv-ttk`.
 
 ---
 
 ## 🔧 Installazione e Avvio
 
-To run the project, you need **Python 3**, **Java 17+**, and **Apache Kafka**.
+Per eseguire il progetto, sono necessari **Python 3**, **Java 17+** e **Apache Kafka**.
 
 ### Passo 1: Configurazione di Apache Kafka
-The application requires a running Kafka broker.
+L'applicazione richiede un broker Kafka in esecuzione.
 
-**1a. Download and Start the Server (KRaft mode, without ZooKeeper)**
+**1a. Download e Avvio del Server (modalità KRaft, senza ZooKeeper)**
 
-1.  Download [Apache Kafka](https://kafka.apache.org/downloads) and extract it to a simple folder (e.g., `C:\kafka`).
-2.  Open a **Command Prompt** or **PowerShell** and navigate to the Kafka folder.
-3.  Generate a cluster ID. **Copy the generated ID**.
+1.  Scarica [Apache Kafka](https://kafka.apache.org/downloads) ed estrailo in una cartella semplice (es. `C:\kafka`).
+2.  Apri un **Prompt dei comandi** o **PowerShell** e naviga nella cartella di Kafka.
+3.  Genera un ID per il cluster. **Copia l'ID generato**.
     ```bash
     bin\windows\kafka-storage.bat random-uuid
     ```
-4.  Format the storage directory using the ID you just copied.
+4.  Formatta la directory di storage usando l'ID appena copiato.
     ```bash
-    bin\windows\kafka-storage.bat format -t YOUR_CLUSTER_ID -c config\kraft\server.properties
+    bin\windows\kafka-storage.bat format -t TUO_CLUSTER_ID -c config\kraft\server.properties
     ```
-5.  Start the Kafka server. **This terminal must remain open.**
+5.  Avvia il server Kafka. **Questo terminale deve rimanere aperto.**
     ```bash
     bin\windows\kafka-server-start.bat config\kraft\server.properties
     ```
 
-**1b. Create the Topics**
+**1b. Creazione dei Topic**
 
-Open a **second terminal** and create the 4 topics required for communication:
+Apri un **secondo terminale** e crea i 4 topic necessari per la comunicazione:
 ```bash
-# Topic for messages from SHIELD_1 to Orchestrator
+# Topic per i messaggi da SHIELD_1 a Orchestrator
 bin\windows\kafka-topics.bat --create --topic ics.orchestrator.shield_1 --bootstrap-server localhost:9092
 
-# Topic for messages from SHIELD_2 to Orchestrator
+# Topic per i messaggi da SHIELD_2 a Orchestrator
 bin\windows\kafka-topics.bat --create --topic ics.orchestrator.shield_2 --bootstrap-server localhost:9092
 
-# Topic for responses from Orchestrator to SHIELD_1
+# Topic per le risposte da Orchestrator a SHIELD_1
 bin\windows\kafka-topics.bat --create --topic ics.shield_1 --bootstrap-server localhost:9092
 
-# Topic for responses from Orchestrator to SHIELD_2
+# Topic per le risposte da Orchestrator a SHIELD_2
 bin\windows\kafka-topics.bat --create --topic ics.shield_2 --bootstrap-server localhost:9092
 ```
 
 ### Passo 2: Configurazione del Progetto Python
 
-1.  Clone or download the project into a local folder.
-2.  Ensure the `json.txt` file is in the same folder as the Python script.
-3.  Install the necessary libraries via `pip`.
+1.  Clona o scarica il progetto in una cartella locale.
+2.  Assicurati che il file `json.txt` sia presente nella stessa cartella dello script Python.
+3.  Installa le librerie necessarie tramite `pip`.
     ```bash
     pip install kafka-python pillow sv-ttk
     ```
 
 ### Passo 3: Avvio dell'Applicazione
 
-Once the Kafka server is running, open a **new terminal**, navigate to the project folder, and run the script:
+Una volta che il server Kafka è in esecuzione, apri un **nuovo terminale**, naviga nella cartella del progetto e avvia lo script:
 ```bash
 python Interfaccia.py
 ```
@@ -106,27 +106,27 @@ python Interfaccia.py
 ---
 
 ## 🔍 Verifica del Funzionamento
-To verify that the Orchestrator is sending responses correctly, you can use a command-line tool to "listen" to a topic.
+Per verificare che l'Orchestrator stia inviando correttamente le risposte, puoi usare uno strumento da riga di comando per "ascoltare" un topic.
 
-1.  Open a **new terminal** (a third one, besides the Kafka server and the UI).
-2.  Run this command to listen for messages sent to `SHIELD_1`:
+1.  Apri un **nuovo terminale** (il terzo, oltre a quello del server Kafka e della UI).
+2.  Esegui questo comando per metterti in ascolto dei messaggi inviati a `SHIELD_1`:
     ```bash
     bin\windows\kafka-console-consumer.bat --topic ics.shield_1 --bootstrap-server localhost:9092
     ```
-3.  From the graphical interface, simulate an attack on `SHIELD_1`.
-4.  Observe the "consumer" terminal: you will see the `action` message sent by the Orchestrator appear in real-time.
+3.  Dall'interfaccia grafica, simula un attacco verso `SHIELD_1`.
+4.  Osserva il terminale del "consumer": vedrai apparire in tempo reale il messaggio di tipo `action` inviato dall'Orchestrator.
 
 ---
 
 ## 📦 Dipendenze
-This script requires the following Python libraries:
+Questo script richiede le seguenti librerie Python:
 
-* `kafka-python`: For communication with the Apache Kafka broker.
-* `Pillow`: To manage the window icon.
-* `sv-ttk`: To apply the modern graphical theme to the interface.
+* `kafka-python`: Per la comunicazione con il broker Apache Kafka.
+* `Pillow`: Per gestire l'icona della finestra.
+* `sv-ttk`: Per applicare il tema grafico moderno all'interfaccia.
 
-### requirements.txt File
-If you prefer, you can create a `requirements.txt` file with this content and install everything with `pip install -r requirements.txt`.
+### File `requirements.txt`
+Se preferisci, puoi creare un file `requirements.txt` con questo contenuto e installare tutto con `pip install -r requirements.txt`.
 ```
 kafka-python
 Pillow
