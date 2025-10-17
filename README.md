@@ -64,7 +64,7 @@ L'applicazione richiede un broker Kafka in esecuzione.
     ```
 4.  Formatta la directory di storage usando l'ID appena copiato.
     ```bash
-    bin\windows\kafka-storage.bat format -t TUO_CLUSTER_ID -c config\kraft\server.properties
+    bin\windows\kafka-storage.bat format -t TUO_CLUSTER_ID -c .\config\server.properties --standalone
     ```
 5.  Avvia il server Kafka. **Questo terminale deve rimanere aperto.**
     ```bash
